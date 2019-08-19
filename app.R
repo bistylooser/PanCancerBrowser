@@ -12,36 +12,64 @@ selectable.data <- c(
   "Pneumonia (180 samples + 10 controls, Burnham et al., LHA id 7RU79AQTJD-9)" = "data/browser_Dec17_BurnhamCAP.RData"
 )
 
+info.age <- c(
+  "data/browser_May17_MMML914.RData" = "Age",
+  "data/browser_Dec16_MelanomaKunz.RData" = "Age",
+  "data/browser_Sep16_LGGlioma GGN.RData" = "Age",
+  "data/browser_Dec17_BurnhamCAP.RData" = "Age"
+)
 
+info.sex <- c(
+  "data/browser_May17_MMML914.RData" = "Gender",
+  "data/browser_Dec16_MelanomaKunz.RData" = NULL,
+  "data/browser_Sep16_LGGlioma GGN.RData" = "Sex",
+  "data/browser_Dec17_BurnhamCAP.RData" = "Sex"
+)
 
+info.histology <- c(
+  "data/browser_May17_MMML914.RData" = "Histology",
+  "data/browser_Dec16_MelanomaKunz.RData" = "Melanoma Type",
+  "data/browser_Sep16_LGGlioma GGN.RData" = "Histology",
+  "data/browser_Dec17_BurnhamCAP.RData" = "Group"
+)
 
+info.molecular <- c(
+  "data/browser_May17_MMML914.RData" = "PAT type",
+  "data/browser_Dec16_MelanomaKunz.RData" = "Type",
+  "data/browser_Sep16_LGGlioma GGN.RData" = "Genomic group",
+  "data/browser_Dec17_BurnhamCAP.RData" = "Reclassification"
+)
 
 
 
 source("pages/p_overview.ui.r")
-source("pages/p_geneBrowser.ui.r")
-source("pages/p_genesetBrowser.ui.r")
-source("pages/p_moduleBrowser.ui.r")
-source("pages/p_psfBrowser.ui.r")
+#source("pages/p_geneBrowser.ui.r")
+#source("pages/p_genesetBrowser.ui.r")
+#source("pages/p_moduleBrowser.ui.r")
+#source("pages/p_psfBrowser.ui.r")
 source("pages/p_phenotypeBrowser.ui.r")
 
-ui <- shinyUI(fluidPage( theme="style.css", title="oposSOM Browser", id="topFrame",
+ui <- shinyUI(fluidPage( theme="style.css", title="PanCancer Browser", id="topFrame",
                          
   fluidRow(
     id="dataset_select_panel",
     
     selectInput("dataset_select", label = "Selected data set", selectable.data )
   ),
-  # verbatimTextOutput("info",placeholder=T),
-  
+  fluidRow(
+    id="dataset_select_panelB",
+    
+    selectInput("dataset_selectB", label = "Selected data set 2", width = "50%", selectable.data )
+  ),
+  verbatimTextOutput(outputId = "shiny_variable"),
   div( id="content",
-    tabsetPanel(  tabPanel("Overview", p_overview.ui ),
-                  tabPanel("Gene browser", p_geneBrowser.ui ),
-                  tabPanel("Geneset browser", p_genesetBrowser.ui ),
-                  tabPanel("Module browser", p_moduleBrowser.ui ),
-                  tabPanel("Phenotype browser", p_phenotypeBrowser.ui ),
-                  tabPanel("Pathway signal flow", p_psfBrowser.ui ),
-                  id="main_menu" #, selected = "Phenotype browser" 
+    tabsetPanel(  #tabPanel("Overview", p_overview.ui ),
+                  #tabPanel("Gene browser", p_geneBrowser.ui ),
+                  #tabPanel("Geneset browser", p_genesetBrowser.ui ),
+                  #tabPanel("Module browser", p_moduleBrowser.ui ),
+                  tabPanel("Survival browser", p_phenotypeBrowser.ui ),
+                  #tabPanel("Pathway signal flow", p_psfBrowser.ui ),
+                  id="main_menu" #, selected = "Survival browser" 
     )
   ),
   
@@ -75,23 +103,42 @@ ui <- shinyUI(fluidPage( theme="style.css", title="oposSOM Browser", id="topFram
 
 server <- function(input, output, session) {
   
-  load("data/kegg.collection.RData")
+  #load("data/kegg.collection.RData")
   
-  env <- reactive({
-
+  # browser...Rdata ist als objekt env gespeichert, diese Daten laden und zurückgeben return(env) in variable envA
+  envA <- reactive({
+    #load(input$dataset_select)
     updateTabsetPanel(session, "main_menu", selected = "Overview" )
     session$sendCustomMessage("handler_datasetLoad_start", message=list(""))
     withProgress(message = 'Loading data', value = 1, style='old', { load(input$dataset_select) } )
     session$sendCustomMessage("handler_datasetLoad_finish", message=list(""))
     
+   return(env) 
+  })
+    
+  envB <- reactive({
+    #load(input$dataset_selectB)
+    updateTabsetPanel(session, "main_menu", selected = "Overview" )
+    session$sendCustomMessage("handler_datasetLoad_start", message=list(""))
+    withProgress(message = 'Loading data', value = 1, style='old', { load(input$dataset_selectB) } )
+    session$sendCustomMessage("handler_datasetLoad_finish", message=list(""))
+      
     return(env) 
   })
+  
+  output$shiny_variable <- renderPrint(paste( 
+    envA()$preferences$system.info["user"], 
+    input$dataset_select,
+    envB()$preferences$system.info["user"],
+    input$dataset_selectB))
+  #output$shiny_variable <- renderPrint(pheno.info()$classes)
+  
 
   source("pages/p_overview.server.r", local=TRUE)
-  source("pages/p_geneBrowser.server.r", local=TRUE)
-  source("pages/p_genesetBrowser.server.r", local=TRUE)
-  source("pages/p_moduleBrowser.server.r", local=TRUE)
-  source("pages/p_psfBrowser.server.r", local=TRUE)
+  #source("pages/p_geneBrowser.server.r", local=TRUE)
+  #source("pages/p_genesetBrowser.server.r", local=TRUE)
+  #source("pages/p_moduleBrowser.server.r", local=TRUE)
+  #source("pages/p_psfBrowser.server.r", local=TRUE)
   source("pages/p_phenotypeBrowser.server.r", local=TRUE)
   
  
