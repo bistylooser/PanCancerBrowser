@@ -1,0 +1,309 @@
+
+
+
+/* general */
+
+
+#p_overview,
+#p_geneBrowser,
+#p_genesetBrowser,
+#p_moduleBrowser,
+#p_phenotypeBrowser
+{
+  padding: 15px;
+  /*margin-top: 20px;*/
+}
+
+
+.side_menu
+{
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+  padding: 10px;
+  margin-top: 10px;
+}
+
+
+
+/* dataset_select_panel */
+
+.dataset_select_panel
+{
+  /*border-bottom: 2px solid #0056af;*/
+  /*margin-bottom: 5px;*/ 
+  /*height: 85px;*/
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 10px;
+}
+/* -Auswahl nebeneinander- */
+.dataset_select_panel .form-group 
+{ 
+  display: table-row;
+}
+
+.row .dataset_select_panel 
+{
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.dataset_select_panel .control-label
+{
+  padding-left: 15px;
+  padding-right: 10px;
+  text-align: left;
+}
+ 
+.dataset_select_panel .control-label,
+.dataset_select_panel .selectize-control
+{
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.dataset_select_panel .selectize-control .item
+{
+  padding-right: 15px;
+}
+
+
+/* tab navigation */
+
+
+#main_menu
+{
+  visibility: hidden;
+  border-bottom: 2px solid #0056af;
+}
+#main_menu > li > a 
+{
+  text-align: center;
+  padding:8px 12px;
+  display:block;
+  text-decoration:none;
+  color:#000000;
+  background: #0000af33;
+  border: none;
+}
+
+#main_menu > li.active > a, 
+#main_menu > li.active > a:focus, 
+#main_menu > li.active > a:hover,
+#main_menu > li:hover > a
+{
+  color:#FFFFFF;
+  background: #0056af;
+  border: none;
+}
+
+
+
+/* overview */
+
+#p_overview_dataset
+{
+  margin-bottom: 20px;
+}
+
+
+/* gene browser */
+
+#p_geneBrowser_checkbox_div
+{
+  visibility: hidden;
+  width: 120px;
+  padding: 2px;
+  margin-top: 10px;
+}
+
+#p_geneBrowser .checkbox
+{
+  margin: 0px;
+}
+#p_geneBrowser .shiny-input-container
+{
+  margin: 0px;
+}
+
+#p_geneBrowser .col-sm-8
+{
+  z-index:-1;
+}
+
+#p_geneBrowser_geneInfos
+{
+  margin-top: -20px;
+}
+
+
+/* geneset browser */
+
+#p_genesetBrowser_checkbox_div
+{
+  visibility: hidden;
+  width: 120px;
+  padding: 2px;
+  margin-top: 10px;
+}
+
+#p_genesetBrowser .checkbox
+{
+  margin: 0px;
+}
+#p_genesetBrowser .shiny-input-container
+{
+  margin: 0px;
+}
+
+#p_genesetBrowser .col-sm-8
+{
+  z-index:-1;
+}
+
+#p_genesetBrowser_geneInfos
+{
+  margin-top: -20px;
+}
+
+
+/* module browser */
+
+#p_moduleBrowser_hoverbox            
+{
+  visibility: hidden;
+  position: absolute;
+  border-radius: 5px;
+  z-index: 1;
+  background-color: #FFFFFFD1;
+  padding: 9px;
+  text-align: center;
+}
+
+#p_moduleBrowser_bottomframe
+{
+  visibility: hidden;
+}
+
+/*
+#p_moduleBrowser_tabsetpanel
+{
+  visibility: hidden;
+} */
+
+#p_moduleBrowser .tab-pane
+{
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+
+/* PSF browser */
+
+#p_psfBrowser_menu
+{
+  padding: 2px 2px 0px 2px;
+  background-color: #f5f5f5dd;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+}
+
+#p_psfBrowser .col-sm-6
+{
+  padding: 0px 10px;
+}
+
+#p_psfBrowser .shiny-input-container,
+#p_psfBrowser .selectize-control
+{
+  margin: 0px;
+}
+
+#p_psfBrowser_plotframe
+{
+  margin-top: 20px;
+}
+
+#p_psfBrowser_hoverbox
+{
+  visibility: hidden;
+  position: absolute;
+  z-index: 1;
+  padding: 0px;
+}
+
+#p_psfBrowser_clickbox
+{
+  visibility: hidden;
+  position: absolute;
+  top: 182px;
+  width: calc(100% - 60px);
+  height: calc(70% - 186px);
+  border: 2px solid #000000;
+  border-radius: 5px;
+  z-index: 1;
+  background-color: #f5f5f5;
+  padding: 9px;
+  margin: 0px 15px 0px 15px;
+}
+
+#p_psfBrowser_clickbox_close,
+#p_psfBrowser_clickbox_goto,
+{
+  padding: 2px 12px 2px 12px;
+}
+
+#p_psfBrowser_clickbox_info
+{
+  margin-top: 10px;
+  padding: 0px;
+  background: none;
+  border: none;
+}
+
+#p_psfBrowser_clickbox_profile
+{
+  height: calc(100% - 76px) !important;
+}
+
+/* phenotype browser */
+
+#p_phenotypeBrowser .col-sm-5
+{
+  padding: 0px;
+}
+#p_phenotypeBrowser .col-sm-7
+{
+  padding: 0px;
+}
+
+#p_phenotypeBrowser_correlationNetwork_hoverbox, 
+#p_phenotypeBrowser_correlationNetwork_clickbox
+{
+  visibility: hidden;
+  position: absolute;
+/*  max-width: 600px;
+  min-width: 0px;*/
+  border-radius: 5px;
+  z-index: 1;
+  background-color: #FFFFFFD1;
+  padding: 9px;
+}
+
+#p_phenotypeBrowser_correlationNetwork_clickbox_info
+{
+  padding: 0px;
+  background: none;
+  border: none;
+}
+
+#p_phenotypeBrowser_survivalCurves
+{
+  padding-top: 10px
+}
+
+

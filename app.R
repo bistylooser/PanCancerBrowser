@@ -2,7 +2,9 @@
 library(shiny)
 library(igraph)
 library(DT)
-
+library(plotly)
+library(ggplot2)
+library(dplyr)
 
 
 selectable.data <- c(
@@ -52,16 +54,16 @@ source("pages/p_phenotypeBrowser.ui.r")
 ui <- shinyUI(fluidPage( theme="style.css", title="PanCancer Browser", id="topFrame",
                          
   fluidRow(
-    id="dataset_select_panel",
-    
-    selectInput("dataset_select", label = "Selected data set", selectable.data )
+    class ="dataset_select_panel",
+    selectInput("dataset_select", label = "Select data set 1", selectable.data )
   ),
   fluidRow(
-    id="dataset_select_panelB",
-    
-    selectInput("dataset_selectB", label = "Selected data set 2", width = "50%", selectable.data )
+    class ="dataset_select_panel",
+    selectInput("dataset_selectB", label = "Select data set 2", selectable.data, selected = selectable.data[2] )
   ),
-  verbatimTextOutput(outputId = "shiny_variable"),
+  tags$hr(),
+  #verbatimTextOutput(outputId = "shiny_variable"),
+  
   div( id="content",
     tabsetPanel(  #tabPanel("Overview", p_overview.ui ),
                   #tabPanel("Gene browser", p_geneBrowser.ui ),
@@ -126,11 +128,11 @@ server <- function(input, output, session) {
     return(env) 
   })
   
-  output$shiny_variable <- renderPrint(paste( 
-    envA()$preferences$system.info["user"], 
-    input$dataset_select,
-    envB()$preferences$system.info["user"],
-    input$dataset_selectB))
+  # output$shiny_variable <- renderPrint(paste( 
+  #   envA()$preferences$system.info["user"], 
+  #   input$dataset_select,
+  #   envB()$preferences$system.info["user"],
+  #   input$dataset_selectB))
   #output$shiny_variable <- renderPrint(pheno.info()$classes)
   
 

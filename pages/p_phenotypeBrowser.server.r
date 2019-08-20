@@ -1,6 +1,6 @@
 
 
-plot.kaplan.meier.curve <- function(fu.time,event.state,col,caption)
+kaplan.meier.df <- function(fu.time,event.state)
 {
   S.lefttail <- 1
   n.i <- length(fu.time)
@@ -35,11 +35,11 @@ plot.kaplan.meier.curve <- function(fu.time,event.state,col,caption)
       t.stariway <- c( t.stariway, fu.time[i-1] )			
     }
   }
+  return(data.frame(cbind(Years = round(t.stariway, 1), Probability = round(S.stairway, 2))))
+  #lines( t.stariway, S.stairway, type="l", col=col, lwd=3 )	
+  #points( fu.time[ which( event.state == 0 ) ], S[ which( event.state == 0 )+1 ], pch=3, col=col )
   
-  lines( t.stariway, S.stairway, type="l", col=col, lwd=3 )	
-  points( fu.time[ which( event.state == 0 ) ], S[ which( event.state == 0 )+1 ], pch=3, col=col )
-  
-  text( tail(t.stariway,1)+0.1, tail(S.stairway,1), caption, cex=0.9, adj=0 )
+  #text( tail(t.stariway,1)+0.1, tail(S.stairway,1), caption, cex=0.9, adj=0 )
   
 }
 
@@ -159,7 +159,9 @@ pheno.info <- reactive({
   
   
   classesA <- grep( paste0(pheno.sel()$p_phenotypeBrowser_selectPhenoA,"_"), colnames(envA()$pheno.table), value=T )
+  classesA <- classesA[order(classesA)]
   classesB <- grep( paste0(pheno.sel()$p_phenotypeBrowser_selectPhenoB,"_"), colnames(envB()$pheno.table), value=T )
+  classesB <- classesB[order(classesB)]
   
   # if( !"all" %in% input$p_phenotypeBrowser_selectPheno2 ) 
   # {
@@ -190,15 +192,22 @@ pheno.info <- reactive({
 
 
 
-output$p_phenotypeBrowser_survivalCurves <- renderPlot({
+output$p_phenotypeBrowser_survivalCurves <- renderPlotly({
 
   if( is.null(pheno.info()) || (is.null(envA()$survival.data) && is.null(envB()$survival.data) )) return()
   
-  # plot
-  par(mar=c(5,4,4,0))
-  plot( 0, type="n", xlim=c(0,ceiling(max(envA()$survival.data[1,], envB()$survival.data[1,]))), ylim=c(0,1), las=1, xlab="Years", ylab="Probability (OS)", cex.axis=1, cex.lab=1)
-  title( main="Survival curves", cex.main=2)
+  # ggplt plot 
+  p <- ggplot() + 
+    theme_light() +
+    #ggtitle ("Survival curves")+
+    #theme(plot.margin = margin(10, 0, 10, 0))+
+    scale_x_continuous(name = "Years", limits = c(0,10)) +
+    scale_y_continuous(name = "Probability (OS)", limits = c(0,1))
+  
   #loop for every class data envA
+  colfunc <- colorRampPalette(c("cornflowerblue", "darkblue"))
+  info.colA <- colfunc(length(pheno.info()$classesA))
+  i <- 1
   if(!is.null(envA()$survival.data)){
     for( gr.i in pheno.info()$classesA )
       {
@@ -210,11 +219,19 @@ output$p_phenotypeBrowser_survivalCurves <- renderPlot({
       fu.time = fu.time[order( fu.time )]
     
       if(length(fu.time)>0)
-        plot.kaplan.meier.curve( fu.time, event.state, envA()$pheno.table.colors[gr.i], strsplit( gr.i, "_" )[[1]][2] )
+        data = data.frame(kaplan.meier.df(fu.time, event.state), Class = strsplit( gr.i, "_" )[[1]][2])
+      p <- p + geom_line(data = data, 
+                          aes(x = Years, y = Probability, text = paste(input$p_phenotypeBrowser_selectPheno,":", Class)), 
+                          color = info.colA[i])
+      i <- i+1
     }
+    p
   } 
   
-  # data envB
+  # loop for every class data envB
+  colfunc <- colorRampPalette(c("gold", "gold4"))
+  info.colB <- colfunc(length(pheno.info()$classesB))
+  i <- 1
   if(!is.null(envB()$survival.data)){
     for( gr.i in pheno.info()$classesB )
     {
@@ -226,12 +243,20 @@ output$p_phenotypeBrowser_survivalCurves <- renderPlot({
       fu.time = fu.time[order( fu.time )]
       
       if(length(fu.time)>0)
-        plot.kaplan.meier.curve( fu.time, event.state, envB()$pheno.table.colors[gr.i], strsplit( gr.i, "_" )[[1]][2] )
+        data = data.frame(kaplan.meier.df(fu.time, event.state), Class = strsplit( gr.i, "_" )[[1]][2])
+      p <- p + geom_line(data = data, 
+                          aes(x = Years, y = Probability, text = paste(input$p_phenotypeBrowser_selectPheno,":", Class)), 
+                          color = info.colB[i])
+      i <- i+1
     }
+    p
   } else {
     return()
   }
 })
+
+
+
 
 ##### Ende
 # output$p_phenotypeBrowser_correlationNetwork <- renderPlot({
@@ -313,10 +338,10 @@ output$p_phenotypeBrowser_survivalCurves <- renderPlot({
 
 
 
-
-output$info <- renderText({
-  
-  
-})
+# 
+# output$info <- renderText({
+#   
+#   
+# })
 
 

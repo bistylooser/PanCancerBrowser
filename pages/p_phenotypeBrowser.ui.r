@@ -8,7 +8,6 @@ p_phenotypeBrowser.ui <- fluidPage( id="p_phenotypeBrowser",
                       fluidRow(
                         column( 6,
                                 selectInput("p_phenotypeBrowser_selectPheno", label = NULL,
-                                            #choices = unique( sapply( strsplit( colnames(envA()$pheno.table), "_" ), head, 1 ) ),
                                             choices = c("Age", "Sex", "Histology", "Molecular type"), 
                                             selected = "Age")
                         )
@@ -16,7 +15,8 @@ p_phenotypeBrowser.ui <- fluidPage( id="p_phenotypeBrowser",
     )
     )),
   fluidRow(
-    column(12, plotOutput("p_phenotypeBrowser_survivalCurves")))
+    column(6, offset = 5, h4("Survival curves")),
+    column(12, plotlyOutput("p_phenotypeBrowser_survivalCurves")))
 )
 
 
