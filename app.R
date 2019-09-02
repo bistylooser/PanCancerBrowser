@@ -7,6 +7,7 @@ library(ggplot2)
 library(dplyr)
 
 
+
 selectable.data <- c(
   "Lymphoma (873 tumor samples, MMML consortium, LHA id 7WEWFE12CK-4)" = "data/browser_May17_MMML914.RData",
   "Melanoma (80 tumor & nevi samples, Kunz et al., LHA id 7R4PDEM4HG-2)" = "data/browser_Dec16_MelanomaKunz.RData",
@@ -44,9 +45,9 @@ info.molecular <- c(
 
 
 
-source("pages/p_overview.ui.r")
-#source("pages/p_geneBrowser.ui.r")
-#source("pages/p_genesetBrowser.ui.r")
+#source("pages/p_overview.ui.r")
+source("pages/p_geneBrowser.ui.r")
+source("pages/p_genesetBrowser.ui.r")
 #source("pages/p_moduleBrowser.ui.r")
 #source("pages/p_psfBrowser.ui.r")
 source("pages/p_phenotypeBrowser.ui.r")
@@ -66,8 +67,8 @@ ui <- shinyUI(fluidPage( theme="style.css", title="PanCancer Browser", id="topFr
   
   div( id="content",
     tabsetPanel(  #tabPanel("Overview", p_overview.ui ),
-                  #tabPanel("Gene browser", p_geneBrowser.ui ),
-                  #tabPanel("Geneset browser", p_genesetBrowser.ui ),
+                  tabPanel("Gene browser", p_geneBrowser.ui ),
+                  tabPanel("Function browser", p_genesetBrowser.ui ),
                   #tabPanel("Module browser", p_moduleBrowser.ui ),
                   tabPanel("Survival browser", p_phenotypeBrowser.ui ),
                   #tabPanel("Pathway signal flow", p_psfBrowser.ui ),
@@ -136,12 +137,12 @@ server <- function(input, output, session) {
   #output$shiny_variable <- renderPrint(pheno.info()$classes)
   
 
-  source("pages/p_overview.server.r", local=TRUE)
-  #source("pages/p_geneBrowser.server.r", local=TRUE)
-  #source("pages/p_genesetBrowser.server.r", local=TRUE)
+ #source("pages/p_overview.server.r", local=TRUE)
+ source("pages/p_geneBrowser.server.r", local=TRUE)
+ source("pages/p_genesetBrowser.server.r", local=TRUE)
   #source("pages/p_moduleBrowser.server.r", local=TRUE)
   #source("pages/p_psfBrowser.server.r", local=TRUE)
-  source("pages/p_phenotypeBrowser.server.r", local=TRUE)
+ source("pages/p_phenotypeBrowser.server.r", local=TRUE)
   
  
   

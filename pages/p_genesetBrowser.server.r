@@ -1,83 +1,185 @@
+functionTable <- reactive({
+  p_genesetBrowser_genesetTableA <- 
+    data.frame(
+      Name = names( envA()$gs.def.list ),
+      Genes_dataset1 = sapply( envA()$gs.def.list, function(x) length(x$Genes)),
+      Genes_dataset2 = "",
+      stringsAsFactors = FALSE)
+  
+  p_genesetBrowser_genesetTableB <- 
+    data.frame(
+      Name = names( envB()$gs.def.list ),
+      Genes_dataset1 = "",
+      Genes_dataset2 = sapply( envB()$gs.def.list, function(x) length(x$Genes)), 
+      stringsAsFactors = FALSE )
+  
+  # combine TableA and TableB to p_genesetBrowser_genesetTable
+  p_genesetBrowser_genesetTable.all <- rbind( p_genesetBrowser_genesetTableA, p_genesetBrowser_genesetTableB )
+  p_genesetBrowser_genesetTable <- p_genesetBrowser_genesetTable.all[ which(!duplicated( p_genesetBrowser_genesetTable.all$Name ) ), ] 
+  p_genesetBrowser_genesetTable <-p_genesetBrowser_genesetTable[order(p_genesetBrowser_genesetTable$Name),]
+  
+  # Add Number of Genes for dataset 1 and 2
+  p_genesetBrowser_genesetTable$Genes_dataset1 <- p_genesetBrowser_genesetTableA[p_genesetBrowser_genesetTable$Name,"Genes_dataset1"]
+  p_genesetBrowser_genesetTable$Genes_dataset2 <- p_genesetBrowser_genesetTableB[p_genesetBrowser_genesetTable$Name,"Genes_dataset2"]
+  
+  
+  return(
+    p_genesetBrowser_genesetTable
+  )
+})
 
 output$p_genesetBrowser_genesetTable <- renderDataTable({
-  
-  return( data.frame(
-    Name = names( env()$gs.def.list ),
-    Genes = sapply( env()$gs.def.list, function(x) length(x$Genes) )
-  ) )
-  
+  return(
+    functionTable()
+  )
 }, rownames=F, selection = 'single')
+#options = list(columnDefs = list(list(className = 'dt-center', targets = 2:3)))
 
-
-output$p_genesetBrowser_geneProfile <- renderPlot({
-
-  if( !is.null( input$p_genesetBrowser_genesetTable_row_last_clicked ) )
+output$p_genesetBrowser_geneProfileA <- renderPlotly({
+  
+  clicked.name <- functionTable()$Name[input$p_genesetBrowser_genesetTable_row_last_clicked]
+  clicked.row.envA <- which(rownames(envA()$samples.GSZ.scores) == clicked.name)
+  
+  if (!is.null( input$p_genesetBrowser_genesetTable_row_last_clicked ))
   {
-    session$sendCustomMessage("element_visible", message=list(id="#p_genesetBrowser_checkbox_div", state="visible"))
-
-    if( input$p_genesetBrowser_checkbox )
+    if (clicked.name %in% rownames(envA()$samples.GSZ.scores))
     {
-      group.expression <- tapply( env()$samples.GSZ.scores[input$p_genesetBrowser_genesetTable_row_last_clicked,], env()$group.labels, c )[unique(env()$group.labels)]
-
-      par(mar=c(5,4,2,1))
-      boxplot( group.expression, col=env()$groupwise.group.colors,
-               names = NA, ylim=range(env()$samples.GSZ.scores), ylab="GSZ", las=2 )
-
-      text(x=c(1:length(group.expression)), y=par()$usr[3]-0.05*(par()$usr[4]-par()$usr[3]), #par("usr")[3] - 0.3,
-           labels=unique(env()$group.labels), srt=40, adj=1, xpd=TRUE, cex=1)
-
-      title( main=names( env()$gs.def.list )[ input$p_genesetBrowser_genesetTable_row_last_clicked ], line=1)
-      box()
-
-    } else
-    {
-      par(mar=c(2,4,2,1))
-      barplot( env()$samples.GSZ.scores[input$p_genesetBrowser_genesetTable_row_last_clicked,],
-               col=env()$group.colors, border = NA, names.arg = NA,
-               ylim=range(env()$samples.GSZ.scores), ylab="GSZ", las=2 )
-      title( main=names( env()$gs.def.list )[ input$p_genesetBrowser_genesetTable_row_last_clicked ], line=1)
-      mtext("samples",1)
-      box()
+      #session$sendCustomMessage("element_visible", message=list(id="#p_genesetBrowser_checkbox_div", state="visible"))
+      
+      df <- data.frame(sample=1:length(envA()$samples.GSZ.scores[clicked.row.envA,]), 
+                       expression =round(envA()$samples.GSZ.scores[clicked.row.envA,], 4), 
+                       group = "", 
+                       stringsAsFactors = FALSE)
+      df$group <- as.factor(envA()$group.labels[rownames(df)])
+      df$group <- ordered(df$group, levels=names(envA()$groupwise.group.colors))
+      
+      if( input$p_genesetBrowser_checkboxA )
+      {
+        p <- ggplot(df, aes(group, expression)) + 
+          theme_light() +
+          geom_boxplot(aes(fill = group), outlier.shape=2, size = 0.2)+
+          scale_fill_manual(values = envA()$groupwise.group.colors[df$group]) +
+          labs(title= paste( "data set 1:", names(envA()$gs.def.list)[clicked.row.envA]), x = "", y = "expression")+
+          scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envA()$samples.GSZ.scores), max(envA()$samples.GSZ.scores)))+
+          theme(legend.position = "none",
+                plot.title = element_text(size=11, margin = margin(10, 0, 10, 0)),
+                panel.grid.minor = element_blank(),
+                panel.grid.major = element_blank(),
+                axis.text.x= element_text(angle=20))
+        p
+        
+      } else
+      {
+        p <- ggplot(df, aes(sample, expression)) + 
+          theme_light() +
+          geom_bar(aes(fill = group, text = paste("group:", group)), stat = "identity")+
+          scale_fill_manual(values = envA()$groupwise.group.colors[df$group])+
+          labs(title= paste( "data set 1:", names(envA()$gs.def.list)[clicked.row.envA]), x = "samples", y = "expression")+
+          scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envA()$samples.GSZ.scores), max(envA()$samples.GSZ.scores)))+
+          theme(legend.position = "none",
+                plot.title = element_text(size=11, margin = margin(10, 0, 10, 0)),
+                axis.text.x = element_blank(),
+                axis.ticks.x = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.grid.major = element_blank())
+        p
+        
+      }
     }
   }
-
+  
 })
 
-output$p_genesetBrowser_geneMapping <- renderPlot({
 
-  if( !is.null( input$p_genesetBrowser_genesetTable_row_last_clicked ) )
+output$p_genesetBrowser_geneProfileB <- renderPlotly({
+  
+  clicked.name <- functionTable()$Name[input$p_genesetBrowser_genesetTable_row_last_clicked]
+  clicked.row.envB <- which(rownames(envB()$samples.GSZ.scores) == clicked.name)
+  
+  if (!is.null( input$p_genesetBrowser_genesetTable_row_last_clicked ))
   {
-    par(mar=c(2,2,2,0))
-
-    spot.background <- get(paste("spot.list.",env()$preferences$standard.spot.modules,sep=""),envir = env())$overview.mask
-
-    image( x=c(1:env()$preferences$dim.1stLvlSom), y=c(1:env()$preferences$dim.1stLvlSom),
-           z=matrix(spot.background, env()$preferences$dim.1stLvlSom), col="gray90", axes=F, xlab="", ylab="" )
-    box()
-    axis( 1, las=1 ); axis( 1, 1, 1, las=1 )
-    axis( 2, las=1 ); axis( 2, 1, 1, las=1 )
-
-    
-
-    
-    n.map <- matrix(0,env()$preferences$dim.1stLvlSom,env()$preferences$dim.1stLvlSom)
-    gs.nodes <- env()$som.result$feature.BMU[names(env()$gene.info$ids)[which(env()$gene.info$ids %in% env()$gs.def.list[[input$p_genesetBrowser_genesetTable_row_last_clicked]]$Genes)]]
-    n.map[as.numeric(names(table(gs.nodes)))] <- table(gs.nodes)
-    n.map[which(n.map==0)] <- NA
-    n.map <- matrix(n.map, env()$preferences$dim.1stLvlSom)
-    
-    lim <- c(1,env()$preferences$dim.1stLvlSom) + env()$preferences$dim.1stLvlSom * 0.01 * c(-1, 1)
-    colr <- env()$color.palette.heatmaps(1000)[(na.omit(as.vector(n.map)) - min(n.map,na.rm=TRUE)) /
-                                           max(1, (max(n.map,na.rm=TRUE) - min(n.map,na.rm=TRUE))) *
-                                           999 + 1]
-    cex <- 0.5 + na.omit(as.vector(n.map)) / 10 * 2.8
-    cex <- pmin(cex,3.3)
-    
-    par(new=T)
-    plot(which(!is.na(n.map), arr.ind=TRUE), xlim=lim, ylim=lim, pch=16, axes=FALSE,
-         xlab="",ylab="", xaxs="i", yaxs="i", col=colr,
-         cex=cex)
-    
-    mtext( paste0("gene localization (maximum: ",max(n.map,na.rm=T)," genes)"),3)
+    if (clicked.name %in% rownames(envB()$samples.GSZ.scores))
+    {
+      #session$sendCustomMessage("element_visible", message=list(id="#p_genesetBrowser_checkbox_div", state="visible"))
+      
+      df <- data.frame(sample=1:length(envB()$samples.GSZ.scores[clicked.row.envB,]), 
+                       expression =round(envB()$samples.GSZ.scores[clicked.row.envB,], 4), 
+                       group = "", 
+                       stringsAsFactors = FALSE)
+      df$group <- as.factor(envB()$group.labels[rownames(df)])
+      df$group <- ordered(df$group, levels=names(envB()$groupwise.group.colors))
+      
+      if( input$p_genesetBrowser_checkboxB )
+      {
+        p <- ggplot(df, aes(group, expression)) + 
+          theme_light() +
+          geom_boxplot(aes(fill = group), outlier.shape=2, size = 0.2)+
+          scale_fill_manual(values = envB()$groupwise.group.colors[df$group]) +
+          labs(title= paste( "data set 2:", names(envB()$gs.def.list)[clicked.row.envB]), x = "", y = "expression")+
+          scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envB()$samples.GSZ.scores), max(envB()$samples.GSZ.scores)))+
+          theme(legend.position = "none",
+                plot.title = element_text(size=11, margin = margin(10, 0, 10, 0)),
+                panel.grid.minor = element_blank(),
+                panel.grid.major = element_blank(),
+                axis.text.x= element_text(angle=20))
+        p
+        
+      } else
+      {
+        p <- ggplot(df, aes(sample, expression)) + 
+          theme_light() +
+          geom_bar(aes(fill = group, text = paste("group:", group)), stat = "identity")+
+          scale_fill_manual(values = envB()$groupwise.group.colors[df$group])+
+          labs(title= paste( "data set 2:", names(envB()$gs.def.list)[clicked.row.envB]), x = "samples", y = "expression")+
+          scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envB()$samples.GSZ.scores), max(envB()$samples.GSZ.scores)))+
+          theme(legend.position = "none",
+                plot.title = element_text(size=11, margin = margin(10, 0, 10, 0)),
+                axis.text.x = element_blank(),
+                axis.ticks.x = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.grid.major = element_blank())
+        p
+        
+      }
+    }
   }
+  
 })
+
+
+
+
+# output$p_genesetBrowser_geneProfileA <- renderPlot({
+# 
+#   if( !is.null( input$p_genesetBrowser_genesetTable_row_last_clicked ) )
+#   {
+#     session$sendCustomMessage("element_visible", message=list(id="#p_genesetBrowser_checkboxA_div", state="visible"))
+# 
+#     if( input$p_genesetBrowser_checkboxA )
+#     {
+#       group.expression <- tapply( envA()$samples.GSZ.scores[input$p_genesetBrowser_genesetTable_row_last_clicked,], envA()$group.labels, c )[unique(envA()$group.labels)]
+# 
+#       par(mar=c(5,4,2,1))
+#       boxplot( group.expression, col=envA()$groupwise.group.colors,
+#                names = NA, ylim=range(envA()$samples.GSZ.scores), ylab="GSZ", las=2 )
+# 
+#       text(x=c(1:length(group.expression)), y=par()$usr[3]-0.05*(par()$usr[4]-par()$usr[3]), #par("usr")[3] - 0.3,
+#            labels=unique(envA()$group.labels), srt=40, adj=1, xpd=TRUE, cex=1)
+# 
+#       title( main=names( envA()$gs.def.list )[ input$p_genesetBrowser_genesetTable_row_last_clicked ], line=1)
+#       box()
+# 
+#     } else
+#     {
+#       par(mar=c(2,4,2,1))
+#       barplot( envA()$samples.GSZ.scores[input$p_genesetBrowser_genesetTable_row_last_clicked,],
+#                col=envA()$group.colors, border = NA, names.arg = NA,
+#                ylim=range(envA()$samples.GSZ.scores), ylab="GSZ", las=2 )
+#       title( main=names( envA()$gs.def.list )[ input$p_genesetBrowser_genesetTable_row_last_clicked ], line=1)
+#       mtext("samples",1)
+#       box()
+#     }
+#   }
+# 
+# })
+# 
