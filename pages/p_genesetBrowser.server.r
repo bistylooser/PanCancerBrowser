@@ -18,7 +18,7 @@ functionTable <- reactive({
   p_genesetBrowser_genesetTable <- p_genesetBrowser_genesetTable.all[ which(!duplicated( p_genesetBrowser_genesetTable.all$Name ) ), ] 
   p_genesetBrowser_genesetTable <-p_genesetBrowser_genesetTable[order(p_genesetBrowser_genesetTable$Name),]
   
-  # Add Number of Genes for dataset 1 and 2
+  # Add Number of Genes for dataset 1 and 2 - ? NOT WORKING for Pneumonia - use apply
   p_genesetBrowser_genesetTable$Genes_dataset1 <- p_genesetBrowser_genesetTableA[p_genesetBrowser_genesetTable$Name,"Genes_dataset1"]
   p_genesetBrowser_genesetTable$Genes_dataset2 <- p_genesetBrowser_genesetTableB[p_genesetBrowser_genesetTable$Name,"Genes_dataset2"]
   
@@ -59,10 +59,10 @@ output$p_genesetBrowser_geneProfileA <- renderPlotly({
           theme_light() +
           geom_boxplot(aes(fill = group), outlier.shape=2, size = 0.2)+
           scale_fill_manual(values = envA()$groupwise.group.colors[df$group]) +
-          labs(title= paste( "data set 1:", names(envA()$gs.def.list)[clicked.row.envA]), x = "", y = "expression")+
+          labs(title= names(envA()$gs.def.list)[clicked.row.envA], x = "", y = "expression")+
           scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envA()$samples.GSZ.scores), max(envA()$samples.GSZ.scores)))+
           theme(legend.position = "none",
-                plot.title = element_text(size=11, margin = margin(10, 0, 10, 0)),
+                plot.title = element_text(size=11, hjust = 0.5),
                 panel.grid.minor = element_blank(),
                 panel.grid.major = element_blank(),
                 axis.text.x= element_text(angle=20))
@@ -74,10 +74,10 @@ output$p_genesetBrowser_geneProfileA <- renderPlotly({
           theme_light() +
           geom_bar(aes(fill = group, text = paste("group:", group)), stat = "identity")+
           scale_fill_manual(values = envA()$groupwise.group.colors[df$group])+
-          labs(title= paste( "data set 1:", names(envA()$gs.def.list)[clicked.row.envA]), x = "samples", y = "expression")+
+          labs(title= names(envA()$gs.def.list)[clicked.row.envA], x = "samples", y = "expression")+
           scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envA()$samples.GSZ.scores), max(envA()$samples.GSZ.scores)))+
           theme(legend.position = "none",
-                plot.title = element_text(size=11, margin = margin(10, 0, 10, 0)),
+                plot.title = element_text(size=11, hjust = 0.5),
                 axis.text.x = element_blank(),
                 axis.ticks.x = element_blank(),
                 panel.grid.minor = element_blank(),
@@ -115,10 +115,10 @@ output$p_genesetBrowser_geneProfileB <- renderPlotly({
           theme_light() +
           geom_boxplot(aes(fill = group), outlier.shape=2, size = 0.2)+
           scale_fill_manual(values = envB()$groupwise.group.colors[df$group]) +
-          labs(title= paste( "data set 2:", names(envB()$gs.def.list)[clicked.row.envB]), x = "", y = "expression")+
+          labs(title= names(envB()$gs.def.list)[clicked.row.envB], x = "", y = "expression")+
           scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envB()$samples.GSZ.scores), max(envB()$samples.GSZ.scores)))+
           theme(legend.position = "none",
-                plot.title = element_text(size=11, margin = margin(10, 0, 10, 0)),
+                plot.title = element_text(size=11, hjust = 0.5),
                 panel.grid.minor = element_blank(),
                 panel.grid.major = element_blank(),
                 axis.text.x= element_text(angle=20))
@@ -130,10 +130,10 @@ output$p_genesetBrowser_geneProfileB <- renderPlotly({
           theme_light() +
           geom_bar(aes(fill = group, text = paste("group:", group)), stat = "identity")+
           scale_fill_manual(values = envB()$groupwise.group.colors[df$group])+
-          labs(title= paste( "data set 2:", names(envB()$gs.def.list)[clicked.row.envB]), x = "samples", y = "expression")+
+          labs(title= names(envB()$gs.def.list)[clicked.row.envB], x = "samples", y = "expression")+
           scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envB()$samples.GSZ.scores), max(envB()$samples.GSZ.scores)))+
           theme(legend.position = "none",
-                plot.title = element_text(size=11, margin = margin(10, 0, 10, 0)),
+                plot.title = element_text(size=11, hjust = 0.5),
                 axis.text.x = element_blank(),
                 axis.ticks.x = element_blank(),
                 panel.grid.minor = element_blank(),

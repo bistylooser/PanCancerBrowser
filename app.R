@@ -8,6 +8,7 @@ library(dplyr)
 
 
 
+
 selectable.data <- c(
   "Lymphoma (873 tumor samples, MMML consortium, LHA id 7WEWFE12CK-4)" = "data/browser_May17_MMML914.RData",
   "Melanoma (80 tumor & nevi samples, Kunz et al., LHA id 7R4PDEM4HG-2)" = "data/browser_Dec16_MelanomaKunz.RData",

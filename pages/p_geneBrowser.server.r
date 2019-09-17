@@ -71,10 +71,11 @@ output$p_geneBrowser_geneProfileA <- renderPlotly({
           theme_light() +
           geom_boxplot(aes(fill = group), outlier.shape=2, size = 0.2)+
           scale_fill_manual(values = envA()$groupwise.group.colors[df$group]) +
-          labs(title= paste( "data set 1:",clicked.ensemble,"/", envA()$gene.info$names[first(clicked.rows.envA)]),
+          labs(title= paste(clicked.ensemble,"/", envA()$gene.info$names[first(clicked.rows.envA)]),
                x = "", y = "expression")+
           scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envA()$indata), max(envA()$indata)))+
           theme(legend.position = "none",
+                plot.title = element_text(size=11, hjust = 0.5),
                 panel.grid.minor = element_blank(),
                 panel.grid.major = element_blank(),
                 axis.text.x= element_text(angle=20))
@@ -86,10 +87,11 @@ output$p_geneBrowser_geneProfileA <- renderPlotly({
          theme_light() +
          geom_bar(aes(fill = group, text = paste("group:", group)), stat = "identity")+
          scale_fill_manual(values = envA()$groupwise.group.colors[df$group])+
-         labs(title= paste( "data set 1:",clicked.ensemble,"/", envA()$gene.info$names[first(clicked.rows.envA)]),
+         labs(title= paste(clicked.ensemble,"/", envA()$gene.info$names[first(clicked.rows.envA)]),
               x = "samples", y = "expression")+
          scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envA()$indata), max(envA()$indata)))+
          theme(legend.position = "none",
+               plot.title = element_text(size=11, hjust = 0.5),
                axis.text.x = element_blank(),
                axis.ticks.x = element_blank(),
                panel.grid.minor = element_blank(),
@@ -130,10 +132,11 @@ output$p_geneBrowser_geneProfileB <- renderPlotly({
           theme_light() +
           geom_boxplot(aes(fill = group), outlier.shape=2, size = 0.2)+
           scale_fill_manual(values = envB()$groupwise.group.colors[df$group]) +
-          labs(title= paste( "data set 2:",clicked.ensemble,"/", envB()$gene.info$names[first(clicked.rows.envB)]),
+          labs(title= paste(clicked.ensemble,"/", envB()$gene.info$names[first(clicked.rows.envB)]),
                x = "", y = "expression")+
           scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envB()$indata), max(envB()$indata)))+
           theme(legend.position = "none",
+                plot.title = element_text(size=11, hjust = 0.5),
                 panel.grid.minor = element_blank(),
                 panel.grid.major = element_blank(),
                 axis.text.x= element_text(angle=20))
@@ -145,10 +148,11 @@ output$p_geneBrowser_geneProfileB <- renderPlotly({
           theme_light() +
           geom_bar(aes(fill = group, text = paste("group:", group)), stat = "identity")+
           scale_fill_manual(values = envB()$groupwise.group.colors[df$group])+
-          labs(title= paste( "data set 2:",clicked.ensemble,"/", envB()$gene.info$names[first(clicked.rows.envB)]),
+          labs(title= paste(clicked.ensemble,"/", envB()$gene.info$names[first(clicked.rows.envB)]),
                x = "samples", y = "expression")+
           scale_y_continuous(breaks = scales::pretty_breaks(n=5), limits = c(min(envB()$indata), max(envB()$indata)))+
           theme(legend.position = "none",
+                plot.title = element_text(size=11, hjust = 0.5),
                 axis.text.x = element_blank(),
                 axis.ticks.x = element_blank(),
                 panel.grid.minor = element_blank(),

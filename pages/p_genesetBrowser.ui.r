@@ -7,6 +7,10 @@ p_genesetBrowser.ui <- fluidPage( id="p_genesetBrowser",
   # div( id="p_genesetBrowser_checkbox_div", class="side_menu",
   #   checkboxInput("p_genesetBrowser_checkbox", label="class boxplots", value=FALSE )
   # ),
+  fluidRow(
+    column(6, h4("Data set 1:")),
+    column(6, h4("Data set 2:"))
+  ),
   fluidRow(#id="p_genesetBrowser_checkbox_div", class="side_menu",
     column(6, 
            checkboxInput("p_genesetBrowser_checkboxA", label="class boxplots", value=FALSE )),
@@ -23,6 +27,3 @@ p_genesetBrowser.ui <- fluidPage( id="p_genesetBrowser",
   )
 
 )
-
-
-

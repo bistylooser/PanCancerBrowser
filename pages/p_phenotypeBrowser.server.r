@@ -133,8 +133,11 @@ output$p_phenotypeBrowser_survivalCurves <- renderPlotly({
   # ggplot 
   p <- ggplot() + 
     theme_light() +
-    scale_x_continuous(name = "Years", limits = c(0,10)) +
-    scale_y_continuous(name = "Probability (OS)", limits = c(0,1))
+    theme(legend.position = "none",
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank())+
+    scale_x_continuous(name = "Years", expand=c(0,0), limits = c(0,10)) +
+    scale_y_continuous(name = "Probability (OS)",limits = c(0,1))
   
   #loop for every class in envA
   colfunc <- colorRampPalette(c("cornflowerblue", "darkblue"))
