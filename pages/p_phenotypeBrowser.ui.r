@@ -12,7 +12,11 @@ p_phenotypeBrowser.ui <- fluidPage( id="p_phenotypeBrowser",
                                             selected = "Age")),
                         column(width = 3, offset = 2, checkboxGroupInput(inputId = "p_phenotypeBrowser_selectdata", 
                                                                     label = NULL, 
-                                                                    choices = c("data set 1", "data set 2"), 
+                                                                    choiceNames = list(
+                                                                      tags$span("data set 1", style = "color: cornflowerblue;"),
+                                                                      tags$span("data set 2", style = "color: gold;")),
+                                                                    choiceValues = c("data set 1", "data set 2"),
+                                                                    #choices = c("data set 1", "data set 2"), 
                                                                     selected = c("data set 1", "data set 2")))
                         # column(width = 3, offset = 2, checkboxInput(inputId = "p_phenotypeBrowser_selectdataB", 
                         #                                             label = "data set 2", value = TRUE))

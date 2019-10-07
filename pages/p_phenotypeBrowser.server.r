@@ -161,7 +161,7 @@ output$p_phenotypeBrowser_survivalCurves <- renderPlotly({
                           color = info.colA[i])
       i <- i+1
     }
-    p <- p + geom_text() + annotate("text", label = "data set 1", x=0.4, y=0.1, colour = "cornflowerblue", size = 3.5)
+    #p <- p + geom_text() + annotate("text", label = "data set 1", x=0.4, y=0.1, colour = "cornflowerblue", size = 3.5)
   } 
   
   # loop for every class in envB
@@ -186,8 +186,9 @@ output$p_phenotypeBrowser_survivalCurves <- renderPlotly({
                           color = info.colB[i])
       i <- i+1
     }
-    p <- p + geom_text() + annotate("text", label = "data set 2", x = 0.4, y=0.05, colour = "gold", size = 3.5)
+    #p <- p + geom_text() + annotate("text", label = "data set 2", x = 0.4, y=0.05, colour = "gold", size = 3.5)
   } 
-  p
+  ggplotly(p) %>%
+    config(displayModeBar = FALSE)
 })
 

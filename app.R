@@ -1,12 +1,9 @@
-
 library(shiny)
 library(igraph)
 library(DT)
 library(plotly)
 library(ggplot2)
 library(dplyr)
-
-
 
 
 selectable.data <- c(
@@ -16,6 +13,20 @@ selectable.data <- c(
   "Pneumonia (180 samples + 10 controls, Burnham et al., LHA id 7RU79AQTJD-9)" = "data/browser_Dec17_BurnhamCAP.RData"
 )
 
+# Infos Overview
+info.links <- data.frame(Name = names(selectable.data), 
+                         Publication = c("Loeffler-Wirth et al., 2019", 
+                                         "Kunz et al., 2018", 
+                                         "Weller et al., 2015", 
+                                         "Hopp et al., 2018"),
+                         Url = c("https://www.health-atlas.de/publications/243", 
+                                 "https://www.health-atlas.de/publications/74", 
+                                 "https://www.health-atlas.de/publications/64", 
+                                 "https://www.health-atlas.de/publications/223"),
+                         row.names = names(selectable.data))
+
+
+# Infos Survival browser
 info.age <- c(
   "data/browser_May17_MMML914.RData" = "Age",
   "data/browser_Dec16_MelanomaKunz.RData" = "Age",
@@ -46,10 +57,10 @@ info.molecular <- c(
 
 
 
-#source("pages/p_overview.ui.r")
+source("pages/p_overview.ui.r")
 source("pages/p_geneBrowser.ui.r")
 source("pages/p_genesetBrowser.ui.r")
-#source("pages/p_moduleBrowser.ui.r")
+source("pages/p_moduleBrowser.ui.r")
 #source("pages/p_psfBrowser.ui.r")
 source("pages/p_phenotypeBrowser.ui.r")
 
@@ -67,13 +78,13 @@ ui <- shinyUI(fluidPage( theme="style.css", title="PanCancer Browser", id="topFr
   #verbatimTextOutput(outputId = "shiny_variable"),
   
   div( id="content",
-    tabsetPanel(  #tabPanel("Overview", p_overview.ui ),
+    tabsetPanel(  tabPanel("Overview", p_overview.ui ),
                   tabPanel("Gene browser", p_geneBrowser.ui ),
                   tabPanel("Function browser", p_genesetBrowser.ui ),
-                  #tabPanel("Module browser", p_moduleBrowser.ui ),
+                  tabPanel("Module browser", p_moduleBrowser.ui ),
                   tabPanel("Survival browser", p_phenotypeBrowser.ui ),
                   #tabPanel("Pathway signal flow", p_psfBrowser.ui ),
-                  id="main_menu" #, selected = "Survival browser" 
+                  id="main_menu" , selected = "Overview" 
     )
   ),
   
@@ -112,7 +123,7 @@ server <- function(input, output, session) {
   # browser...Rdata ist als objekt env gespeichert, diese Daten laden und zurückgeben return(env) in variable envA
   envA <- reactive({
     #load(input$dataset_select)
-    updateTabsetPanel(session, "main_menu", selected = "Overview" )
+    updateTabsetPanel(session, "main_menu", selected = "" )
     session$sendCustomMessage("handler_datasetLoad_start", message=list(""))
     withProgress(message = 'Loading data', value = 1, style='old', { load(input$dataset_select) } )
     session$sendCustomMessage("handler_datasetLoad_finish", message=list(""))
@@ -122,7 +133,7 @@ server <- function(input, output, session) {
     
   envB <- reactive({
     #load(input$dataset_selectB)
-    updateTabsetPanel(session, "main_menu", selected = "Overview" )
+    updateTabsetPanel(session, "main_menu", selected = "" )
     session$sendCustomMessage("handler_datasetLoad_start", message=list(""))
     withProgress(message = 'Loading data', value = 1, style='old', { load(input$dataset_selectB) } )
     session$sendCustomMessage("handler_datasetLoad_finish", message=list(""))
@@ -138,10 +149,10 @@ server <- function(input, output, session) {
   #output$shiny_variable <- renderPrint(pheno.info()$classes)
   
 
- #source("pages/p_overview.server.r", local=TRUE)
+ source("pages/p_overview.server.r", local=TRUE)
  source("pages/p_geneBrowser.server.r", local=TRUE)
  source("pages/p_genesetBrowser.server.r", local=TRUE)
-  #source("pages/p_moduleBrowser.server.r", local=TRUE)
+ source("pages/p_moduleBrowser.server.r", local=TRUE)
   #source("pages/p_psfBrowser.server.r", local=TRUE)
  source("pages/p_phenotypeBrowser.server.r", local=TRUE)
   

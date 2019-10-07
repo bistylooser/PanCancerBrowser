@@ -79,7 +79,8 @@ output$p_geneBrowser_geneProfileA <- renderPlotly({
                 panel.grid.minor = element_blank(),
                 panel.grid.major = element_blank(),
                 axis.text.x= element_text(angle=20))
-        p
+        ggplotly(p) %>%
+          config(displayModeBar = FALSE)
       
      } else
      {
@@ -96,7 +97,8 @@ output$p_geneBrowser_geneProfileA <- renderPlotly({
                axis.ticks.x = element_blank(),
                panel.grid.minor = element_blank(),
                panel.grid.major = element_blank())
-       p
+       ggplotly(p) %>%
+         config(displayModeBar = FALSE)
       
      }
     }
@@ -140,7 +142,8 @@ output$p_geneBrowser_geneProfileB <- renderPlotly({
                 panel.grid.minor = element_blank(),
                 panel.grid.major = element_blank(),
                 axis.text.x= element_text(angle=20))
-        p
+        ggplotly(p) %>%
+          config(displayModeBar = FALSE)
         
       } else
       {
@@ -157,7 +160,8 @@ output$p_geneBrowser_geneProfileB <- renderPlotly({
                 axis.ticks.x = element_blank(),
                 panel.grid.minor = element_blank(),
                 panel.grid.major = element_blank())
-        p
+        ggplotly(p) %>%
+          config(displayModeBar = FALSE)
         
       }
     }
