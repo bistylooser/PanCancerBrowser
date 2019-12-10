@@ -1,4 +1,4 @@
-# PanCancerBrowser
+# PanCancer Browser
 
 Version 1.0, 09.12.19  
 [Interdisciplinary Centre for Bioinformatics, Leipzig University](http://www.izbi.uni-leipzig.de/)  
