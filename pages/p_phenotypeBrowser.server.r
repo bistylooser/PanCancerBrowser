@@ -36,11 +36,6 @@ kaplan.meier.df <- function(fu.time,event.state)
     }
   }
   return(data.frame(cbind(Years = round(t.stariway, 1), Probability = round(S.stairway, 2))))
-  #lines( t.stariway, S.stairway, type="l", col=col, lwd=3 )	
-  #points( fu.time[ which( event.state == 0 ) ], S[ which( event.state == 0 )+1 ], pch=3, col=col )
-  
-  #text( tail(t.stariway,1)+0.1, tail(S.stairway,1), caption, cex=0.9, adj=0 )
-  
 }
 
 
@@ -73,42 +68,12 @@ return( list( p_phenotypeBrowser_selectPhenoA=selA, p_phenotypeBrowser_selectPhe
 
 pheno.info <- reactive({
   
-  # # catch call when selectPheno is still empty
-  #if( is.null(input$p_phenotypeBrowser_selectPhenoA) ) return( NULL )
-  #if( is.null(input$p_phenotypeBrowser_selectPhenoB) ) return( NULL ) 
-  
-  # # catch call when selectPheno2 is empty and needs to be rendered
-  # if( is.null(input$p_phenotypeBrowser_selectPheno2)  )
-  # {
-  #   updateSelectInput( session, "p_phenotypeBrowser_selectPheno2", selected = "all" )
-  #   return(NULL)
-  # }
-  
-  # # catch race conditions when 'all' is picked and selectPheno2 needs update
-  # if( length(input$p_phenotypeBrowser_selectPheno2) > 1 &&
-  #     "all" %in% input$p_phenotypeBrowser_selectPheno2 ) return( NULL )
-  
-  # # catch race conditions when dataset is switched and choices are outdated
-  # if( !input$p_phenotypeBrowser_selectPheno %in%    
-  #     unique( sapply( strsplit( colnames(env()$pheno.table), "_" ), head, 1 ) ) ) return( NULL )
-  
-  
   classesA <- grep( paste0("^", pheno.sel()$p_phenotypeBrowser_selectPhenoA,"_"), colnames(envA()$pheno.table), value=T )
   classesA <- classesA[order(classesA)]
   classesB <- grep( paste0("^", pheno.sel()$p_phenotypeBrowser_selectPhenoB,"_"), colnames(envB()$pheno.table), value=T )
   classesB <- classesB[order(classesB)]
   
-  # if( !"all" %in% input$p_phenotypeBrowser_selectPheno2 ) 
-  # {
-  #   
-  #   if( !paste( input$p_phenotypeBrowser_selectPheno, 
-  #               input$p_phenotypeBrowser_selectPheno2[1], sep="_") %in% classes ) return(NULL)
-  #   
-  #   classes <- paste( input$p_phenotypeBrowser_selectPheno, 
-  #                     input$p_phenotypeBrowser_selectPheno2, sep="_")
-  # }
-  
-  # samples (schreibt bei jedem sample die class rein)
+  # samples (writes the class for every sample)
   samplesA <- apply( envA()$pheno.table[,classesA,drop=FALSE], 1, function(x)
   {
     x = unlist(x)
@@ -128,8 +93,6 @@ pheno.info <- reactive({
 ## plotly used to render graph
 output$p_phenotypeBrowser_survivalCurves <- renderPlotly({
 
-  # if( is.null(pheno.info()) || (is.null(envA()$survival.data) && is.null(envB()$survival.data) )) return()
-  
   # ggplot 
   p <- ggplot() + 
     theme_light() +

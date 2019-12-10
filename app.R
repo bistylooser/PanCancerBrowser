@@ -4,7 +4,7 @@ library(DT)
 library(plotly)
 library(ggplot2)
 library(shinyWidgets)
-#library(dplyr)
+
 
 
 # Infos Data selection
@@ -64,12 +64,10 @@ source("pages/p_overview.ui.r")
 source("pages/p_geneBrowser.ui.r")
 source("pages/p_genesetBrowser.ui.r")
 source("pages/p_moduleBrowser.ui.r")
-#source("pages/p_psfBrowser.ui.r")
 source("pages/p_phenotypeBrowser.ui.r")
 
 ui <- shinyUI(
   fluidPage( theme="style.css", title="PanCancer Browser", id="topFrame", 
-             #tags$head(tags$script(src = "message-handler.js")),
              useSweetAlert("minimal"),  # appearance infobox "sweetalert2", "minimal", "dark", "bootstrap-4", "borderless"
                          
   fluidRow(class ="dataset_select_panel",
@@ -79,10 +77,9 @@ ui <- shinyUI(
     column(11, 
     class ="dataset_select_panel",
     selectInput("dataset_selectB", label = "Select data set 2", selectable.data, selected = selectable.data[2])),
-    column(1, circleButton(inputId = "dataset_select_info", icon = "?", status = "#000056af", size = "sm"))  # status = "#0056af"
+    column(1, circleButton(inputId = "dataset_select_info", icon = "?", status = "#000056af", size = "sm"))
   ),
   tags$hr(),
-  #verbatimTextOutput(outputId = "shiny_variable"),
   
   div( id="content",
     tabsetPanel(  tabPanel("Overview", p_overview.ui ),
@@ -90,7 +87,6 @@ ui <- shinyUI(
                   tabPanel("Function browser", p_genesetBrowser.ui ),
                   tabPanel("Module browser", p_moduleBrowser.ui ),
                   tabPanel("Survival browser", p_phenotypeBrowser.ui ),
-                  #tabPanel("Pathway signal flow", p_psfBrowser.ui ),
                   id="main_menu" , selected = "Overview" 
     )
   ),
@@ -127,7 +123,7 @@ server <- function(input, output, session) {
   
   #load("data/kegg.collection.RData")
   
-  # browser...Rdata ist als objekt env gespeichert, diese Daten laden und zurückgeben return(env) in variable envA
+  # Rdata is stored as object env, load this data and return(env) in variable envA
   envA <- reactive({
     #load(input$dataset_select)
     updateTabsetPanel(session, "main_menu", selected = "" )
@@ -148,28 +144,14 @@ server <- function(input, output, session) {
     return(env) 
   })
   
-  # output$shiny_variable <- renderPrint(paste( 
-  #   envA()$preferences$system.info["user"], 
-  #   input$dataset_select,
-  #   envB()$preferences$system.info["user"],
-  #   input$dataset_selectB))
-  #output$shiny_variable <- renderPrint(pheno.info()$classes)
-  
 
  source("pages/p_overview.server.r", local=TRUE)
  source("pages/p_geneBrowser.server.r", local=TRUE)
  source("pages/p_genesetBrowser.server.r", local=TRUE)
  source("pages/p_moduleBrowser.server.r", local=TRUE)
-  #source("pages/p_psfBrowser.server.r", local=TRUE)
  source("pages/p_phenotypeBrowser.server.r", local=TRUE)
   
   observeEvent(input$dataset_select_info, {
-    # session$sendCustomMessage(type = 'testmessage',
-    #                           message = "Pan Cancer Browser\nhggg"
-    #                                )
-    
-    #shinyalert("Pan Cander Browser", "IZBI", type = "info")
-    
     sendSweetAlert(
       session = session,
       title = "PanCancer Browser",
@@ -186,7 +168,7 @@ server <- function(input, output, session) {
         tags$a("oposSOM analysis pipeline.", 
                href= "https://www.health-atlas.de/models/5", 
                target="_blank"),
-        "The web application is publication-centered and provides an interactive exploration of the corresponding data from clinical trials.",
+        "The application is publication-centered and provides an interactive exploration of the corresponding data from clinical trials.",
         tags$br(),
         tags$br(),
         "Recommended form of citation: ",
@@ -206,42 +188,8 @@ server <- function(input, output, session) {
       btn_labels = "Close",
       btn_colors = "#C0C0C0",
       width = "600px")
-        
-    #     tags$h5("Interdisciplinary Center for Bioinformatics (IZBI), Leipzig University"",
-    #             style = "color: steelblue;"),
-    #     "Interdisciplinary Center for Bioinformatics, Leipzig University", tags$b("bold"), "and", tags$em("italic"),
-    #     tags$br(),
-    #     "Version 1.0, 09.12.19",
-    #     tags$br(),
-    #     "built by Verena Looser",
-    #     tags$br(),
-    #     "breaks",
-    #     tags$br(),
-    #     "and an icon", icon("thumbs-up")
-    #   ),
-    #   html = TRUE
-    #   #type = "info"
-    # )
   })
-  
-  # output$info <- renderText({
-  #   dummy <- input$dataset_select
-  #   env$preferences$system.info["user"]
-  # })
-  
-  
-  
-  
-  
-    # observe({
-    #   query <- parseQueryString(session$clientData$url_search)
-    #   
-    #     nameval = names(reactiveValuesToList(input)[i])
-    #     valuetoupdate = query[[nameval]]
-    #  
-    #   
-    # })
-  }
+}
   
 
 # Run the application 

@@ -1,39 +1,6 @@
 
 
 functionTable <- reactive({
-  
-  # dataA <- envA()$gs.def.list[which(!duplicated(names(envA()$gs.def.list)))]
-  # p_genesetBrowser_genesetTableA <- 
-  #   data.frame(
-  #     Name = names(dataA),
-  #     Genes_dataset1 = sapply(dataA, function(x) length(x$Genes)),
-  #     Genes_dataset2 = "",
-  #     row.names = names(dataA),
-  #     stringsAsFactors = FALSE)
-  # 
-  # dataB <- envB()$gs.def.list[which(!duplicated(names(envB()$gs.def.list)))]
-  # p_genesetBrowser_genesetTableB <- 
-  #   data.frame(
-  #     Name = names(dataB),
-  #     Genes_dataset1 = "",
-  #     Genes_dataset2 = sapply(dataB, function(x) length(x$Genes)), 
-  #     row.names = names(dataB),
-  #     stringsAsFactors = FALSE )
-  # 
-  # # combine TableA and TableB to p_genesetBrowser_genesetTable
-  # p_genesetBrowser_genesetTable.all <- rbind( p_genesetBrowser_genesetTableA, p_genesetBrowser_genesetTableB )
-  # p_genesetBrowser_genesetTable <- p_genesetBrowser_genesetTable.all[ which(!duplicated( p_genesetBrowser_genesetTable.all$Name ) ), ] 
-  # p_genesetBrowser_genesetTable <-p_genesetBrowser_genesetTable[order(p_genesetBrowser_genesetTable$Name),]
-  # 
-  # # Add Number of Genes for dataset 1 and 2 
-  # #p_genesetBrowser_genesetTable[which(p_genesetBrowser_genesetTable$Name %in% p_genesetBrowser_genesetTableA$Name),"Genes_dataset1"] <- "x"
-  # #p_genesetBrowser_genesetTable[which(p_genesetBrowser_genesetTable$Name %in% p_genesetBrowser_genesetTableB$Name),"Genes_dataset2"] <- "x"
-  # p_genesetBrowser_genesetTableA <- p_genesetBrowser_genesetTableA[order(rownames(p_genesetBrowser_genesetTableA)),]
-  # p_genesetBrowser_genesetTable[which(p_genesetBrowser_genesetTable$Name %in% p_genesetBrowser_genesetTableA$Name),"Genes_dataset1"] <- p_genesetBrowser_genesetTableA$Genes_dataset1[which(rownames(p_genesetBrowser_genesetTableA) %in% p_genesetBrowser_genesetTable$Name)]
-  # p_genesetBrowser_genesetTableB <- p_genesetBrowser_genesetTableB[order(rownames(p_genesetBrowser_genesetTableB)),]
-  # p_genesetBrowser_genesetTable[which(p_genesetBrowser_genesetTable$Name %in% p_genesetBrowser_genesetTableB$Name),"Genes_dataset2"] <- p_genesetBrowser_genesetTableB$Genes_dataset2[which(rownames(p_genesetBrowser_genesetTableB) %in% p_genesetBrowser_genesetTable$Name)]
-  # 
-  # Common Functions / Gensets of EnvA and EnvB
   if (input$dataset_select != input$dataset_selectB) {
     
   g.all.intersect <- intersect(envA()$gene.info$ids, envB()$gene.info$ids)
@@ -41,8 +8,6 @@ functionTable <- reactive({
   g2 <- sapply(envB()$gs.def.list, function(x){intersect(x$Genes, g.all.intersect)}) 
   Common_Functions  <- intersect(names(g1), names(g2))
  
-  
-  
   # # matrix p-values for genes in each common function
   # data.p <- sapply(Common_Functions, function(x){
   #   # Contingency table
@@ -118,12 +83,13 @@ functionTable <- reactive({
   )
 })
 
+
 output$p_genesetBrowser_genesetTable <- renderDataTable({
   return(
     functionTable()
   )
 }, rownames=F, selection = 'single')
-#options = list(columnDefs = list(list(className = 'dt-center', targets = 2:3)))
+
 
 
 output$p_genesetBrowser_geneProfileA <- renderPlotly({
@@ -135,8 +101,6 @@ output$p_genesetBrowser_geneProfileA <- renderPlotly({
   {
     if (clicked.name %in% rownames(envA()$samples.GSZ.scores))
     {
-      #session$sendCustomMessage("element_visible", message=list(id="#p_genesetBrowser_checkbox_div", state="visible"))
-      
       df <- data.frame(sample=1:length(envA()$samples.GSZ.scores[clicked.row.envA,]), 
                        expression =round(envA()$samples.GSZ.scores[clicked.row.envA,], 4), 
                        group = "", 
@@ -184,6 +148,7 @@ output$p_genesetBrowser_geneProfileA <- renderPlotly({
 })
 
 
+
 output$p_genesetBrowser_geneProfileB <- renderPlotly({
   
   clicked.name <- functionTable()$Name[input$p_genesetBrowser_genesetTable_row_last_clicked]
@@ -193,8 +158,6 @@ output$p_genesetBrowser_geneProfileB <- renderPlotly({
   {
     if (clicked.name %in% rownames(envB()$samples.GSZ.scores))
     {
-      #session$sendCustomMessage("element_visible", message=list(id="#p_genesetBrowser_checkbox_div", state="visible"))
-      
       df <- data.frame(sample=1:length(envB()$samples.GSZ.scores[clicked.row.envB,]), 
                        expression =round(envB()$samples.GSZ.scores[clicked.row.envB,], 4), 
                        group = "", 
@@ -240,41 +203,3 @@ output$p_genesetBrowser_geneProfileB <- renderPlotly({
   }
   
 })
-
-
-
-
-# output$p_genesetBrowser_geneProfileA <- renderPlot({
-# 
-#   if( !is.null( input$p_genesetBrowser_genesetTable_row_last_clicked ) )
-#   {
-#     session$sendCustomMessage("element_visible", message=list(id="#p_genesetBrowser_checkboxA_div", state="visible"))
-# 
-#     if( input$p_genesetBrowser_checkboxA )
-#     {
-#       group.expression <- tapply( envA()$samples.GSZ.scores[input$p_genesetBrowser_genesetTable_row_last_clicked,], envA()$group.labels, c )[unique(envA()$group.labels)]
-# 
-#       par(mar=c(5,4,2,1))
-#       boxplot( group.expression, col=envA()$groupwise.group.colors,
-#                names = NA, ylim=range(envA()$samples.GSZ.scores), ylab="GSZ", las=2 )
-# 
-#       text(x=c(1:length(group.expression)), y=par()$usr[3]-0.05*(par()$usr[4]-par()$usr[3]), #par("usr")[3] - 0.3,
-#            labels=unique(envA()$group.labels), srt=40, adj=1, xpd=TRUE, cex=1)
-# 
-#       title( main=names( envA()$gs.def.list )[ input$p_genesetBrowser_genesetTable_row_last_clicked ], line=1)
-#       box()
-# 
-#     } else
-#     {
-#       par(mar=c(2,4,2,1))
-#       barplot( envA()$samples.GSZ.scores[input$p_genesetBrowser_genesetTable_row_last_clicked,],
-#                col=envA()$group.colors, border = NA, names.arg = NA,
-#                ylim=range(envA()$samples.GSZ.scores), ylab="GSZ", las=2 )
-#       title( main=names( envA()$gs.def.list )[ input$p_genesetBrowser_genesetTable_row_last_clicked ], line=1)
-#       mtext("samples",1)
-#       box()
-#     }
-#   }
-# 
-# })
-# 

@@ -9,8 +9,8 @@ output$p_overview_textpanel <- renderTable({
 
   ret <- matrix( c(
     "", "Data set 1", "Data set 2",
-    "Name", name.envA, name.envB,
-    "Publication", link.envA, link.envB,
+    "Name:", name.envA, name.envB,
+    "Publication:", link.envA, link.envB,
     "Number of samples: ", length(envA()$group.labels), length(envB()$group.labels),
     "Number of subgroups: ", length(unique(envA()$group.labels)), length(unique(envB()$group.labels)),
     "Number of genes: ", length(envA()$gene.info$ids), length(envB()$gene.info$ids),
