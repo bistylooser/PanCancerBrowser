@@ -3,15 +3,18 @@ library(igraph)
 library(DT)
 library(plotly)
 library(ggplot2)
-library(dplyr)
+library(shinyWidgets)
+#library(dplyr)
 
 
+# Infos Data selection
 selectable.data <- c(
   "Lymphoma (873 tumor samples, MMML consortium, LHA id 7WEWFE12CK-4)" = "data/browser_May17_MMML914.RData",
   "Melanoma (80 tumor & nevi samples, Kunz et al., LHA id 7R4PDEM4HG-2)" = "data/browser_Dec16_MelanomaKunz.RData",
   "Glioma, low grade (137 tumor samples, GGN consortium, LHA id 7Q0CFRJKW4-7)" = "data/browser_Sep16_LGGlioma GGN.RData",
   "Pneumonia (180 samples + 10 controls, Burnham et al., LHA id 7RU79AQTJD-9)" = "data/browser_Dec17_BurnhamCAP.RData"
 )
+
 
 # Infos Overview
 info.links <- data.frame(Name = names(selectable.data), 
@@ -64,15 +67,19 @@ source("pages/p_moduleBrowser.ui.r")
 #source("pages/p_psfBrowser.ui.r")
 source("pages/p_phenotypeBrowser.ui.r")
 
-ui <- shinyUI(fluidPage( theme="style.css", title="PanCancer Browser", id="topFrame",
+ui <- shinyUI(
+  fluidPage( theme="style.css", title="PanCancer Browser", id="topFrame", 
+             #tags$head(tags$script(src = "message-handler.js")),
+             useSweetAlert("minimal"),  # appearance infobox "sweetalert2", "minimal", "dark", "bootstrap-4", "borderless"
                          
-  fluidRow(
-    class ="dataset_select_panel",
-    selectInput("dataset_select", label = "Select data set 1", selectable.data )
+  fluidRow(class ="dataset_select_panel",
+    selectInput("dataset_select", label = "Select data set 1", selectable.data)
   ),
   fluidRow(
+    column(11, 
     class ="dataset_select_panel",
-    selectInput("dataset_selectB", label = "Select data set 2", selectable.data, selected = selectable.data[2] )
+    selectInput("dataset_selectB", label = "Select data set 2", selectable.data, selected = selectable.data[2])),
+    column(1, circleButton(inputId = "dataset_select_info", icon = "?", status = "#000056af", size = "sm"))  # status = "#0056af"
   ),
   tags$hr(),
   #verbatimTextOutput(outputId = "shiny_variable"),
@@ -156,7 +163,66 @@ server <- function(input, output, session) {
   #source("pages/p_psfBrowser.server.r", local=TRUE)
  source("pages/p_phenotypeBrowser.server.r", local=TRUE)
   
- 
+  observeEvent(input$dataset_select_info, {
+    # session$sendCustomMessage(type = 'testmessage',
+    #                           message = "Pan Cancer Browser\nhggg"
+    #                                )
+    
+    #shinyalert("Pan Cander Browser", "IZBI", type = "info")
+    
+    sendSweetAlert(
+      session = session,
+      title = "PanCancer Browser",
+      text = h6(tags$span(
+        tags$a("Interdisciplinary Centre for Bioinformatics, Leipzig University", 
+               href= "http://www.izbi.uni-leipzig.de/", 
+               target="_blank"),
+        tags$br(),
+        tags$p("Version 1.0, 09.12.19"), 
+        tags$br(),
+        tags$br(),
+        "The PanCancer Browser is a web application for the interactive comparison of 
+        molecular landscapes of different cancers provided by the ", 
+        tags$a("oposSOM analysis pipeline.", 
+               href= "https://www.health-atlas.de/models/5", 
+               target="_blank"),
+        "The web application is publication-centered and provides an interactive exploration of the corresponding data from clinical trials.",
+        tags$br(),
+        tags$br(),
+        "Recommended form of citation: ",
+        tags$br(),
+        "Looser V, Loeffler-Wirth H, Binder H (2019). PanCancer Browser. Version 1.0. Interdisciplinary Centre for Bioinformatics, Leipzig University,",
+        tags$a("www.health-atlas.de", 
+               href= "https://www.health-atlas.de/", 
+               target="_blank"),
+        tags$br(),
+        tags$br(),
+        "The web application is licensed under the terms of use defined for the ",
+        tags$a("Leipzig Health Atlas.", 
+               href= "https://www.health-atlas.de/home/about", 
+               target="_blank")
+        )),
+      html = TRUE,
+      btn_labels = "Close",
+      btn_colors = "#C0C0C0",
+      width = "600px")
+        
+    #     tags$h5("Interdisciplinary Center for Bioinformatics (IZBI), Leipzig University"",
+    #             style = "color: steelblue;"),
+    #     "Interdisciplinary Center for Bioinformatics, Leipzig University", tags$b("bold"), "and", tags$em("italic"),
+    #     tags$br(),
+    #     "Version 1.0, 09.12.19",
+    #     tags$br(),
+    #     "built by Verena Looser",
+    #     tags$br(),
+    #     "breaks",
+    #     tags$br(),
+    #     "and an icon", icon("thumbs-up")
+    #   ),
+    #   html = TRUE
+    #   #type = "info"
+    # )
+  })
   
   # output$info <- renderText({
   #   dummy <- input$dataset_select
